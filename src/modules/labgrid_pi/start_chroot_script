@@ -19,6 +19,7 @@ unpack /filesystem/boot /boot
 
 cd /home/"${BASE_USER}"
 
+# ~ 300 MB ?
 apt-get install -y \
 	git \
 	rustc libssl-dev musl-dev musl-dev python3-dev libffi-dev pkg-config \
@@ -28,12 +29,27 @@ apt-get install -y \
 # curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs > get_rustup.sh
 # sudo -u pi sh ./get_rustup.sh --profile minimal -y
 
+## LABGRID
+
 # set up venv
 #sudo -u pi python3 -m virtualenv -p python3 labgrid-venv
 # . labgrid-venv/bin/activate
+# ~ 500 MB ?
 sudo -u pi git clone https://github.com/labgrid-project/labgrid
 sudo -u pi pip install --upgrade pip
 time sudo -u pi pip install ./labgrid
+
+
+## ESP IDF
+# set up esp idf environment in order to use `idf.py monitor`
+mkdir /home/"${BASE_USER}"/esp
+pushd /home/"${BASE_USER}"/esp
+  git clone --recursive https://github.com/espressif/esp-idf.git
+  cd esp-idf
+  ./install.sh all
+popd
+echo 'alias get_idf=". $HOME/esp/esp-idf/export.sh"' >  /home/"${BASE_USER}"/.profile
+
 
 # Unpack root at the end, so files are modified before
 unpack /filesystem/root /
